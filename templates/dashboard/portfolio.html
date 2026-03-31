@@ -1,0 +1,153 @@
+{% extends 'dashboard/layout.html' %}
+{% block title %}Portfolio — Folio{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="text-2xl font-bold mb-1">Portfolio</h1>
+<p class="text-gray-500 text-sm mb-6">Showcase projects, case studies, and featured work.</p>
+
+<!-- Add item form -->
+<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6" x-data="{ open: false }">
+  <button @click="open = !open"
+          class="flex items-center gap-2 font-semibold text-gray-900 hover:text-indigo-600 transition">
+    <span x-text="open ? '−' : '+'" class="text-xl font-bold w-5"></span>
+    Add a portfolio item
+  </button>
+
+  <form method="post" action="{{ url_for('dashboard.portfolio') }}" novalidate x-show="open" x-cloak class="mt-4">
+    {{ form.hidden_tag() }}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="sm:col-span-2">
+        <label class="block text-xs font-medium text-gray-600 mb-1">Title *</label>
+        {{ form.title(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="e.g. E-commerce Redesign") }}
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-xs font-medium text-gray-600 mb-1">Description</label>
+        {{ form.description(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", rows=3, placeholder="What did you build? What was the result?") }}
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1">Image URL</label>
+        {{ form.image_url(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="https://...") }}
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1">Project URL</label>
+        {{ form.project_url(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="https://...") }}
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1">GitHub URL</label>
+        {{ form.github_url(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="https://github.com/...") }}
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1">Tech stack</label>
+        {{ form.tech_stack(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="React, Node.js, PostgreSQL") }}
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-600 mb-1">Sort order</label>
+        {{ form.sort_order(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none") }}
+      </div>
+    </div>
+    <div class="mt-3 flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        {{ form.is_visible(class="w-4 h-4 accent-indigo-600") }}
+        <label class="text-sm text-gray-700">Visible</label>
+      </div>
+      <button type="submit" class="ml-auto bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition">
+        Add item
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Portfolio items list -->
+{% if site.portfolio_items %}
+  <div class="space-y-4">
+    {% for item in site.portfolio_items %}
+      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden" x-data="{ editing: false }">
+        <div class="flex gap-4 p-4">
+          {% if item.image_url %}
+            <img src="{{ item.image_url }}" alt="{{ item.title }}"
+                 class="w-24 h-20 object-cover rounded-lg flex-shrink-0 {% if not item.is_visible %}opacity-40{% endif %}" />
+          {% else %}
+            <div class="w-24 h-20 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl">💼</div>
+          {% endif %}
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 class="font-semibold text-gray-900 {% if not item.is_visible %}opacity-50{% endif %}">{{ item.title }}</h3>
+                {% if not item.is_visible %}
+                  <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Hidden</span>
+                {% endif %}
+              </div>
+              <div class="flex gap-2 ml-2 flex-shrink-0">
+                <button @click="editing = !editing"
+                        class="text-xs text-gray-500 hover:text-indigo-600 border border-gray-200 px-3 py-1 rounded-lg transition">
+                  Edit
+                </button>
+                <form method="post" action="{{ url_for('dashboard.delete_portfolio_item', item_id=item.id) }}"
+                      onsubmit="return confirm('Delete this item?')">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <button type="submit" class="text-xs text-red-500 hover:text-red-700 border border-red-200 px-3 py-1 rounded-lg transition">
+                    Delete
+                  </button>
+                </form>
+              </div>
+            </div>
+            {% if item.description %}
+              <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{ item.description }}</p>
+            {% endif %}
+            {% if item.tech_list() %}
+              <div class="flex flex-wrap gap-1 mt-2">
+                {% for tech in item.tech_list() %}
+                  <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full">{{ tech }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+            <div class="flex gap-3 mt-2">
+              {% if item.project_url %}
+                <a href="{{ item.project_url }}" target="_blank" class="text-xs text-indigo-500 hover:underline">Live ↗</a>
+              {% endif %}
+              {% if item.github_url %}
+                <a href="{{ item.github_url }}" target="_blank" class="text-xs text-gray-500 hover:underline">GitHub ↗</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Inline edit form -->
+        <div x-show="editing" x-cloak class="border-t border-gray-100 p-4">
+          <form method="post" action="{{ url_for('dashboard.edit_portfolio_item', item_id=item.id) }}" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input name="title" value="{{ item.title }}" placeholder="Title" required
+                     class="sm:col-span-2 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+              <textarea name="description" placeholder="Description" rows="2"
+                        class="sm:col-span-2 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">{{ item.description or '' }}</textarea>
+              <input name="image_url" value="{{ item.image_url or '' }}" placeholder="Image URL"
+                     class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+              <input name="project_url" value="{{ item.project_url or '' }}" placeholder="Project URL"
+                     class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+              <input name="github_url" value="{{ item.github_url or '' }}" placeholder="GitHub URL"
+                     class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+              <input name="tech_stack" value="{{ item.tech_stack or '' }}" placeholder="Tech stack"
+                     class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+            </div>
+            <div class="mt-3 flex items-center gap-4">
+              <label class="flex items-center gap-2 text-sm">
+                <input type="checkbox" name="is_visible" {% if item.is_visible %}checked{% endif %} class="accent-indigo-600" />
+                Visible
+              </label>
+              <button type="submit" class="ml-auto bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition">
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="text-center py-16 text-gray-400">
+    <p class="text-4xl mb-3">💼</p>
+    <p>No portfolio items yet. Add your first project above.</p>
+  </div>
+{% endif %}
+{% endblock %}

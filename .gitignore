@@ -1,0 +1,19 @@
+# Secrets — never commit
+.env
+
+# Python virtual environment
+venv/
+.venv/
+
+# Compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+
+# SQLite dev database
+instance/
+
+# Editor/OS files
+.vscode/
+.claude/
+.DS_Store

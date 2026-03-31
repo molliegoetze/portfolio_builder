@@ -1,0 +1,63 @@
+{% extends 'dashboard/layout.html' %}
+{% block title %}Site Settings — Folio{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="text-2xl font-bold mb-1">Site Settings</h1>
+<p class="text-gray-500 text-sm mb-6">Configure your page URL, theme, and visibility.</p>
+
+<div class="bg-white rounded-2xl border border-gray-200 p-6">
+  <form method="post" action="{{ url_for('dashboard.site_settings') }}" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="space-y-5">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form.site_title.label.text }}</label>
+        {{ form.site_title(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none", placeholder="e.g. Jane Smith — Designer") }}
+        {% for error in form.site_title.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form.subdomain.label.text }}</label>
+        <div class="flex rounded-lg border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500">
+          <span class="bg-gray-50 px-3 py-2 text-sm text-gray-500 border-r border-gray-300 whitespace-nowrap">yourapp.com/u/</span>
+          {{ form.subdomain(class="flex-1 px-3 py-2 text-sm outline-none", placeholder="yourname") }}
+        </div>
+        <p class="text-xs text-gray-400 mt-1">Only letters, numbers, and hyphens. Minimum 3 characters.</p>
+        {% for error in form.subdomain.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form.theme.label.text }}</label>
+        {{ form.theme(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white") }}
+      </div>
+
+      <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+        {{ form.is_published(class="w-4 h-4 text-indigo-600 rounded accent-indigo-600") }}
+        <div>
+          <label class="text-sm font-medium text-gray-700 cursor-pointer">{{ form.is_published.label.text }}</label>
+          <p class="text-xs text-gray-400">When enabled, your page is visible at your public URL and listed in search.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mt-6 flex gap-3">
+      <button type="submit"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold transition">
+        Save settings
+      </button>
+      {% if site and site.is_published %}
+        <a href="{{ url_for('public.profile', subdomain=site.subdomain) }}" target="_blank"
+           class="border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2.5 rounded-lg font-medium transition">
+          View page ↗
+        </a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'dashboard/layout.html' %}
+{% block title %}Dashboard — Folio{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+  <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+    <p class="text-3xl font-bold text-indigo-600">{{ site.links | length }}</p>
+    <p class="text-xs text-gray-500 mt-1">Links</p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+    <p class="text-3xl font-bold text-indigo-600">{{ site.images | length }}</p>
+    <p class="text-xs text-gray-500 mt-1">Images</p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+    <p class="text-3xl font-bold text-indigo-600">{{ site.portfolio_items | length }}</p>
+    <p class="text-xs text-gray-500 mt-1">Portfolio</p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+    <p class="text-3xl font-bold {% if site.is_published %}text-green-600{% else %}text-gray-400{% endif %}">
+      {{ 'Live' if site.is_published else 'Draft' }}
+    </p>
+    <p class="text-xs text-gray-500 mt-1">Status</p>
+  </div>
+</div>
+
+<!-- Quick actions -->
+<h2 class="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-3">Quick actions</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+  {% set actions = [
+    ('dashboard.profile',       '👤', 'Edit profile',        'Update your bio, photo, and contact info.'),
+    ('dashboard.links',         '🔗', 'Manage links',        'Add social links and call-to-action buttons.'),
+    ('dashboard.images',        '🖼️', 'Add images',          'Build a gallery to show off your work.'),
+    ('dashboard.portfolio',     '💼', 'Add portfolio items', 'Showcase projects with descriptions and links.'),
+    ('dashboard.site_settings', '⚙️', 'Site settings',       'Change your subdomain, theme, and publish status.'),
+  ] %}
+  {% for endpoint, icon, title, desc in actions %}
+    <a href="{{ url_for(endpoint) }}"
+       class="bg-white rounded-xl border border-gray-200 p-4 hover:border-indigo-300 hover:shadow-sm transition flex gap-3 items-start">
+      <span class="text-2xl">{{ icon }}</span>
+      <div>
+        <p class="font-medium text-gray-900">{{ title }}</p>
+        <p class="text-xs text-gray-500">{{ desc }}</p>
+      </div>
+    </a>
+  {% endfor %}
+</div>
+
+{% if not site.is_published %}
+  <div class="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between">
+    <div>
+      <p class="font-semibold text-amber-800">Your page is not published yet.</p>
+      <p class="text-sm text-amber-700">Enable publishing in Site Settings to make it visible.</p>
+    </div>
+    <a href="{{ url_for('dashboard.site_settings') }}"
+       class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+      Publish
+    </a>
+  </div>
+{% endif %}
+{% endblock %}
