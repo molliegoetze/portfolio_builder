@@ -2,22 +2,24 @@
 {% block title %}Edit Profile — Folio{% endblock %}
 
 {% block dashboard_content %}
-<h1 class="text-2xl font-bold mb-1">Profile</h1>
-<p class="text-gray-500 text-sm mb-6">This is what visitors see on your public page.</p>
+<h1 class="page-title">Profile</h1>
+<p class="page-subtitle">This is what visitors see on your public page.</p>
 
 <form method="post" action="{{ url_for('dashboard.profile') }}" novalidate>
   {{ form.hidden_tag() }}
 
   <!-- Basic info -->
-  <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-5">
-    <h2 class="font-semibold text-gray-900 mb-4">Basic info</h2>
+  <div class="card mb-5">
+    <h2 class="card-title">Basic info</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
       {% macro field(f, placeholder='') %}
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">{{ f.label.text }}</label>
-          {{ f(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none", placeholder=placeholder) }}
-          {% for error in f.errors %}<p class="text-red-500 text-xs mt-1">{{ error }}</p>{% endfor %}
+          <label class="form-label">{{ f.label.text }}</label>
+          {{ f(class="form-input", placeholder=placeholder) }}
+          {% for error in f.errors %}
+            <p class="form-error">{{ error }}</p>
+          {% endfor %}
         </div>
       {% endmacro %}
 
@@ -30,25 +32,25 @@
     </div>
 
     <div class="mt-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">{{ form.bio.label.text }}</label>
-      {{ form.bio(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none", rows=4, placeholder="Tell visitors who you are...") }}
+      <label class="form-label">{{ form.bio.label.text }}</label>
+      {{ form.bio(class="form-input", rows=4, placeholder="Tell visitors who you are...") }}
     </div>
   </div>
 
   <!-- Images -->
-  <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-5">
-    <h2 class="font-semibold text-gray-900 mb-4">Images</h2>
+  <div class="card mb-5">
+    <h2 class="card-title">Images</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Profile image URL</label>
-        {{ form.profile_image_url(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="https://...") }}
+        <label class="form-label">Profile image URL</label>
+        {{ form.profile_image_url(class="form-input", placeholder="https://...") }}
         {% if profile and profile.profile_image_url %}
-          <img src="{{ profile.profile_image_url }}" class="mt-2 w-16 h-16 rounded-full object-cover" />
+          <img src="{{ profile.profile_image_url }}" class="mt-2 w-16 h-16 rounded-full object-cover ring-2 ring-gray-100" />
         {% endif %}
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Background image URL</label>
-        {{ form.background_image_url(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="https://...") }}
+        <label class="form-label">Background image URL</label>
+        {{ form.background_image_url(class="form-input", placeholder="https://...") }}
         {% if profile and profile.background_image_url %}
           <img src="{{ profile.background_image_url }}" class="mt-2 w-full h-12 rounded-lg object-cover" />
         {% endif %}
@@ -57,51 +59,50 @@
   </div>
 
   <!-- Services & Discovery -->
-  <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-5">
+  <div class="card mb-5">
     <h2 class="font-semibold text-gray-900 mb-1">Services &amp; Discovery</h2>
     <p class="text-xs text-gray-400 mb-4">Used to categorize you in the directory.</p>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form.service_category.label.text }}</label>
-        {{ form.service_category(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none bg-white") }}
+        <label class="form-label">{{ form.service_category.label.text }}</label>
+        {{ form.service_category(class="form-input") }}
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form.subcategory.label.text }}</label>
-        {{ form.subcategory(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="e.g. UI/UX Design") }}
+        <label class="form-label">{{ form.subcategory.label.text }}</label>
+        {{ form.subcategory(class="form-input", placeholder="e.g. UI/UX Design") }}
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form.skills.label.text }}</label>
-        {{ form.skills(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="React, Python, Figma") }}
+        <label class="form-label">{{ form.skills.label.text }}</label>
+        {{ form.skills(class="form-input", placeholder="React, Python, Figma") }}
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">{{ form.availability_status.label.text }}</label>
-        {{ form.availability_status(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none bg-white") }}
+        <label class="form-label">{{ form.availability_status.label.text }}</label>
+        {{ form.availability_status(class="form-input") }}
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Min price ($/hr)</label>
-        {{ form.pricing_min(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="50") }}
+        <label class="form-label">Min price ($/hr)</label>
+        {{ form.pricing_min(class="form-input", placeholder="50") }}
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Max price ($/hr)</label>
-        {{ form.pricing_max(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="200") }}
+        <label class="form-label">Max price ($/hr)</label>
+        {{ form.pricing_max(class="form-input", placeholder="200") }}
       </div>
     </div>
 
-    <div class="mt-4 flex gap-6">
-      <div class="flex items-center gap-2">
+    <div class="mt-5 flex gap-6">
+      <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
         {{ form.is_remote(class="w-4 h-4 accent-indigo-600") }}
-        <label class="text-sm text-gray-700">{{ form.is_remote.label.text }}</label>
-      </div>
-      <div class="flex items-center gap-2">
+        {{ form.is_remote.label.text }}
+      </label>
+      <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
         {{ form.is_searchable(class="w-4 h-4 accent-indigo-600") }}
-        <label class="text-sm text-gray-700">{{ form.is_searchable.label.text }}</label>
-      </div>
+        {{ form.is_searchable.label.text }}
+      </label>
     </div>
   </div>
 
-  <button type="submit"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold transition">
+  <button type="submit" class="btn-primary btn-lg">
     Save profile
   </button>
 </form>

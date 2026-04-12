@@ -2,11 +2,11 @@
 {% block title %}Images — Folio{% endblock %}
 
 {% block dashboard_content %}
-<h1 class="text-2xl font-bold mb-1">Images</h1>
-<p class="text-gray-500 text-sm mb-6">Build a gallery. Paste image URLs to add photos.</p>
+<h1 class="page-title">Images</h1>
+<p class="page-subtitle">Build a gallery. Paste image URLs to add photos.</p>
 
 <!-- Add image form -->
-<div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6" x-data="{ open: false }">
+<div class="card mb-6" x-data="{ open: false }">
   <button @click="open = !open"
           class="flex items-center gap-2 font-semibold text-gray-900 hover:text-indigo-600 transition">
     <span x-text="open ? '−' : '+'" class="text-xl font-bold w-5"></span>
@@ -17,30 +17,28 @@
     {{ form.hidden_tag() }}
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div class="sm:col-span-2">
-        <label class="block text-xs font-medium text-gray-600 mb-1">Image URL</label>
-        {{ form.image_url(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="https://...") }}
+        <label class="form-label-xs">Image URL</label>
+        {{ form.image_url(class="form-input", placeholder="https://...") }}
       </div>
       <div>
-        <label class="block text-xs font-medium text-gray-600 mb-1">Alt text</label>
-        {{ form.alt_text(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", placeholder="Describe the image") }}
+        <label class="form-label-xs">Alt text</label>
+        {{ form.alt_text(class="form-input", placeholder="Describe the image") }}
       </div>
       <div>
-        <label class="block text-xs font-medium text-gray-600 mb-1">Sort order</label>
-        {{ form.sort_order(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none") }}
+        <label class="form-label-xs">Sort order</label>
+        {{ form.sort_order(class="form-input") }}
       </div>
       <div class="sm:col-span-2">
-        <label class="block text-xs font-medium text-gray-600 mb-1">Caption (optional)</label>
-        {{ form.caption(class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none", rows=2) }}
+        <label class="form-label-xs">Caption (optional)</label>
+        {{ form.caption(class="form-input", rows=2) }}
       </div>
     </div>
     <div class="mt-3 flex items-center gap-3">
-      <div class="flex items-center gap-2">
+      <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
         {{ form.is_visible(class="w-4 h-4 accent-indigo-600") }}
-        <label class="text-sm text-gray-700">Visible</label>
-      </div>
-      <button type="submit" class="ml-auto bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition">
-        Add image
-      </button>
+        Visible
+      </label>
+      <button type="submit" class="btn-primary btn-sm ml-auto">Add image</button>
     </div>
   </form>
 </div>
@@ -54,40 +52,35 @@
           <img src="{{ image.image_url }}" alt="{{ image.alt_text or '' }}"
                class="w-full h-40 object-cover {% if not image.is_visible %}opacity-40{% endif %}" />
           {% if not image.is_visible %}
-            <span class="absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-0.5 rounded-full">Hidden</span>
+            <span class="absolute top-2 left-2 badge bg-gray-800 text-white">Hidden</span>
           {% endif %}
         </div>
         {% if image.caption %}
           <p class="px-3 py-2 text-xs text-gray-500">{{ image.caption }}</p>
         {% endif %}
         <div class="px-3 pb-3 flex gap-2">
-          <button @click="editing = !editing"
-                  class="text-xs text-gray-500 hover:text-indigo-600 border border-gray-200 px-3 py-1 rounded-lg transition flex-1">
-            Edit
-          </button>
+          <button @click="editing = !editing" class="btn-ghost btn-sm flex-1">Edit</button>
           <form method="post" action="{{ url_for('dashboard.delete_image', image_id=image.id) }}"
                 onsubmit="return confirm('Delete this image?')" class="flex-1">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="w-full text-xs text-red-500 hover:text-red-700 border border-red-200 px-3 py-1 rounded-lg transition">
-              Delete
-            </button>
+            <button type="submit" class="btn-danger btn-sm w-full">Delete</button>
           </form>
         </div>
         <div x-show="editing" x-cloak class="px-3 pb-3 border-t border-gray-100 pt-3">
           <form method="post" action="{{ url_for('dashboard.edit_image', image_id=image.id) }}" novalidate>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input name="image_url" value="{{ image.image_url }}" placeholder="Image URL"
-                   class="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs mb-2 focus:ring-1 focus:ring-indigo-500 outline-none" required />
+                   class="form-input mb-2" required />
             <input name="alt_text" value="{{ image.alt_text or '' }}" placeholder="Alt text"
-                   class="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs mb-2 focus:ring-1 focus:ring-indigo-500 outline-none" />
+                   class="form-input mb-2" />
             <textarea name="caption" placeholder="Caption"
-                      class="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs mb-2 focus:ring-1 focus:ring-indigo-500 outline-none" rows="2">{{ image.caption or '' }}</textarea>
+                      class="form-input mb-2" rows="2">{{ image.caption or '' }}</textarea>
             <div class="flex items-center justify-between">
-              <label class="flex items-center gap-1 text-xs">
+              <label class="flex items-center gap-1.5 text-xs text-gray-700 cursor-pointer select-none">
                 <input type="checkbox" name="is_visible" {% if image.is_visible %}checked{% endif %} class="accent-indigo-600" />
                 Visible
               </label>
-              <button type="submit" class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-xs font-medium">Save</button>
+              <button type="submit" class="btn-primary btn-sm">Save</button>
             </div>
           </form>
         </div>
